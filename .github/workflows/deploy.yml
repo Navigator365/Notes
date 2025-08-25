@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - v4
+
+env:
+  THEME_NAME: brutalism
  
+
 permissions:
   contents: read
   pages: write
@@ -15,6 +19,8 @@ concurrency:
   cancel-in-progress: false
  
 jobs:
+- name: Fetch Quartz Theme
+  run: curl -s -S https://raw.githubusercontent.com/saberzero1/quartz-themes/master/action.sh | bash -s -- $THEME_NAME
   build:
     runs-on: ubuntu-22.04
     steps:
