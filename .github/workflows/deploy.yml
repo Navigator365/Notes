@@ -6,7 +6,7 @@ on:
       - v4
 
 env:
-  THEME_NAME: brutalism
+  THEME_NAME: tokyo-night
  
 
 permissions:
