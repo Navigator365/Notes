@@ -1,7 +1,11 @@
 ---
-title: Welcome to Quartz
+title: Notes Home!
 ---
+Hello! This is where I keep my notes. There's not much rhyme or reason to what I decide to publish.
 
-This is a blank Quartz installation.
-See the [documentation](https://quartz.jzhao.xyz) for how to get started.
+Things I might publish (you can see them on your left):
 
+- Class notes
+- Leetcode writeups
+- HTB writeups
+- Random things I feel the need to document
