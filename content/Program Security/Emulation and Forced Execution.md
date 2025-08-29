@@ -15,4 +15,5 @@ So, a couple new strategies emerged:
 Let's use a hybrid: **forced execution**. We'll take no input, and run sequentially. Whenever we meet a predicate, we'll explore all possible outcomes regardless of whether the predicate is satisfied or not. This may lead to uninitialized variables, or variables with values we don't expect. We'll try to recover from any crashes or errors this may produce, and fuzz any variables that are the source of those errors. 
 
 ![[Pasted image 20250829194858.png]]
+
 This allows us to leverage insights about program structure without fuzzing things we don't have to. 
