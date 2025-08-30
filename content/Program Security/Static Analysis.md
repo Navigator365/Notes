@@ -36,3 +36,11 @@ For loops, we'll recalculate all values inside/descendant from the loop until th
 
  Let's use this to optimize DSR. Instead of encrypting all buffer reads, let's only do it when it's possible for the input to be untrusted, or entered from an outside source. 
  We can throw in some further optimizations by seeing if randomization is even necessary: we can use a constraint solver for a given byte size, and determine if any potentially malicious shellcode could possibly exist within that size. If so, we'll encode all data that is passed into that buffer. 
+
+
+# Symbolic Execution
+
+Despite the "execution" in the name, symbolic execution is still very much static. We're not running the actual code, we're running variables in a symbolic domain. We'll represent code as equations to solve, allowing us to formally reason about programs. 
+
+
+
