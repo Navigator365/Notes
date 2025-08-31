@@ -17,7 +17,7 @@ There are a couple methods of implementing virtual hosting, but the most common 
 
 We can use virtual host enumeration tools, combined with an extensive wordlist, to bruteforce possible subdomains hosted on the same server, if given a starter domain. These tools will put possible domains in the Host header field, and see if the same server responds.  
 
-However, some domains hosted on virtual servers may not have DNS records. We may only have an IP address that we know is associated with a server. If we believe a domain without DNS records may be hosted on that server, we can add a "local" DNS record by editing our /etc/hosts file and use the same enumeration tools, still using the domain name. By doing so, we can see if that domain is actually hosted on that server. 
+However, some domains hosted on virtual servers may not have DNS records. Since DNS zones are organized by domain, if a domain doesn't have a DNS record, none of its subdomains will. Therefore, all of its subdomains must be virtually hosted. If we find an IP address that we know is associated with a domain or server, we can add a "local" DNS record by editing our /etc/hosts file. Then, using the same virtual enumeration tools, we can find all potential subdomains. We'll want to do this any time we have an IP and a domain, but no DNS records.  
 
 **Website Software/Pages**: Tools like whatweb are great for indentifying what software stacks are used, and scrapy is great for webcrawling. However, some webcrawlers may respect the website's robots.txt, which can be used to list directories webcrawlers shouldn't travel to. To achieve full coverage, we also need to check robots.txt, and crawl any domains disallowed there, just in case our webcrawler tool refused to crawl there. 
 
