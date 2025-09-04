@@ -1,3 +1,5 @@
+
+TODO: How does TLS respond to MITM attacks? MITM during the handshake?
 # Handshake
 So we all know how HTTP works. You type something in, it gets resolved via DNS, and you get served with whatever beautiful content you want. 
 
