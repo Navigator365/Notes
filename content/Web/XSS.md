@@ -17,9 +17,15 @@ These attacks require an external delivery mechanism. Often, that happens throug
 If a website renders HTML elements in response to URL parameters, we can use a reflected XSS attack to insert our own payload. This is actually a really common method of phishing! Attackers will create links with XSS payloads that modify a website's appearance, often by adding a new login form. When users click those links, they'll be presented with the form. They'll login, since they trust the website they're on, and they'll be redirected to their account screen. But that form was actually fake, inserted by the attackers, and redirecting all information in it to a server attackers control. This allows attackers to steal user creds without arousing a user's suspicion: after all, they were on a legitimate site the entire time!
 # DOM-Based XSS
 
-These vulnerabilities happen whenever attacker-controlled data can be used as input to JS functions that allow for dynamic code execution. 
+These vulnerabilities happen whenever attacker-controlled data can be used as input to front-end JS functions that allow for dynamic code execution. 
 
 Just like with reflected XSS, attackers can use DOM-Based XSS in malicious URLs, passing in '#payloads' which would execute whenever the user clicked the link. Also like reflected XSS, this is a non-persistent attack: since it's entirely client-side, there's no way for the payload to make its way to the server.  
+
+Look for sources of user input, and then HTML or JS code elements that reference it, and see how they interpret that input. Different sources, called sinks, will perform different operations. Depending on which sink is vulnerable, you may have to structure your payload differently. 
+
+For example, a javascript function might modify a URL to search for based on user input. You just have to find out how the HTML element controlling the URL is structured, and boom! XSS.
+
+If that doesn't work, look for JS elements in general and see if they allow for user input, and what they do with that user input.
 
 # Blind XSS
 
