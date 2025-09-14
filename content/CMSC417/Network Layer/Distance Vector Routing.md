@@ -44,7 +44,7 @@ Since $y$ has its distance vector changed, it'll send its new vector to its neig
 
 Eventually, it'll stop when $D_y(x) > 50$, since $D_z(x)$ will select a minimum and no longer change on every triggered update, but that's still an awful lot of wasted time. 
 
-This problem is called the **count-to-infinity problem.** While we don't actually count to infinity, we want our distance vectors to quickly converge to the actual least-cost paths, not this meandering process. Luckily, we have a couple of mitigations: 
+This problem is called the **count-to-infinity problem.** While we don't always count to infinity (we usually stop once we hit a min condition, unless our only other option is infinity in the case of a down link), we want our distance vectors to quickly converge to the actual least-cost paths, not this meandering process. Luckily, we have a couple of mitigations: 
 
 - **Hard cap**: Define infinity as a small enough number, and we won't waste too much time. In modern implementations of this protocol, infinity is 16. 
 - **Split Horizon**: When sending routing updates, don't send routes back to who we just learned them from. For example, if an update from router $A$ causes an entry in router $B's$ distance vector to change, we won't send that entry back to router $A$. 
