@@ -49,7 +49,7 @@ This problem is called the **count-to-infinity problem.** While we don't always 
 - **Hard cap**: Define infinity as a small enough number, and we won't waste too much time. In modern implementations of this protocol, infinity is 16. 
 - **Split Horizon**: When sending routing updates, don't send routes back to who we just learned them from. For example, if an update from router $A$ causes an entry in router $B's$ distance vector to change, we won't send that entry back to router $A$. 
 	- In our example, this would stop us from counting-to-infinity, but wouldn't encourage convergence: $y$'s and $z$'s distance tables would still contain inaccurate results. 
-	- This is not a foolproof technique: if a link is down, two routers may independently decide their least-cost path is to point to each other, creating a **routing loop. **
+	- This is not a foolproof technique: if a link is down, two routers may independently decide their least-cost path is to point to each other, creating a **routing loop.**
 - **Poison Reverse**:  A stronger version of split horizon where we send back the entry, but with an infinite cost to ensure that $A$ won't use $B$ in its path. 
 	- This helps us converge faster - still not super fast, but as fast as we can. 
 	- In this example, $y$'s distance table entry for x would be set to 60, a closer representation to its actual value. Working through this, you can see that the vectors converge faster (try it! it's good practice). 
