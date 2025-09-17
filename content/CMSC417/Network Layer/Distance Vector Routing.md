@@ -47,10 +47,10 @@ Eventually, it'll stop when $D_y(x) > 50$, since $D_z(x)$ will select a minimum 
 This problem is called the **count-to-infinity problem.** While we don't always count to infinity (we usually stop once we hit a min condition, unless our only other option is infinity in the case of a down link), we want our distance vectors to quickly converge to the actual least-cost paths, not this meandering process. Luckily, we have a couple of mitigations: 
 
 - **Hard cap**: Define infinity as a small enough number, and we won't waste too much time. In modern implementations of this protocol, infinity is 16. 
-- **Split Horizon**: When sending routing updates, don't send routes back to who we just learned them from. For example, if an update from router $A$ causes an entry in router $B's$ distance vector to change, we won't send that entry back to router $A$. 
+- **Split Horizon**: When sending routing updates, don't send routes back to who we just learned them from. For example, if router $A$ requires router $B$ to go to router $C$, we won't send $D_A(C)$ back to router $B$ when sending $A$'s distance vector. 
 	- In our example, this would stop us from counting-to-infinity, but wouldn't encourage convergence: $y$'s and $z$'s distance tables would still contain inaccurate results. 
 	- This is not a foolproof technique: if a link is down, two routers may independently decide their least-cost path is to point to each other, creating a **routing loop.**
-- **Poison Reverse**:  A stronger version of split horizon where we send back the entry, but with an infinite cost to ensure that $A$ won't use $B$ in its path. 
+- **Poison Reverse**:  A stronger version of split horizon where we send $D_A(C) = \infty$ back to $B$ when sending $A$'s distance vector.  
 	- This helps us converge faster - still not super fast, but as fast as we can. 
 	- In this example, $y$'s distance table entry for x would be set to 60, a closer representation to its actual value. Working through this, you can see that the vectors converge faster (try it! it's good practice). 
 	-  This strategy prevents routing loops between pairs of routers, since they'll never choose to point to each other. However, it's not foolproof: some loops can persist involving 3+ routers, though we don't need to worry too much about this for the class. 
