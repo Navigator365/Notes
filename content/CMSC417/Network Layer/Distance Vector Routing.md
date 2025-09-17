@@ -47,7 +47,7 @@ Eventually, it'll stop when $D_y(x) > 50$, since $D_z(x)$ will select a minimum 
 This problem is called the **count-to-infinity problem.** While we don't always count to infinity (we usually stop once we hit a min condition, unless our only other option is infinity in the case of a down link), we want our distance vectors to quickly converge to the actual least-cost paths, not this meandering process. Luckily, we have a couple of mitigations: 
 
 - **Hard cap**: Define infinity as a small enough number, and we won't waste too much time. In modern implementations of this protocol, infinity is 16. 
-- **Split Horizon**: When sending routing updates, don't send routes back to our next-hop neighbor. For example, if router $A$ requires router $B$ to go to router $C$, we won't send $D_A(C)$ back to router $B$ when sending $A$'s distance vector. 
+- **Split Horizon**: When sending routing updates, don't send routes back to our next-hop neighbor. For example, if after running our algo router $A$ has router $B$ as a next-hop to go to router $C$, we won't send $D_A(C)$ back to router $B$ when sending $A$'s distance vector. 
 	- In our example, this would stop us from counting-to-infinity, but wouldn't encourage convergence: $y$'s and $z$'s distance tables would still contain inaccurate results. 
 	- This is not a foolproof technique: if a link is down, two routers may independently decide their least-cost path is to point to each other, creating a **routing loop.**
 - **Poison Reverse**:  A stronger version of split horizon where we send $D_A(C) = \infty$ back to $B$ when sending $A$'s distance vector.  
