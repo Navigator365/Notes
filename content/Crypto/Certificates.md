@@ -1,3 +1,10 @@
+
+TODO
+- smth abt how they can be installed at the os level to build up that layer of trust
+	- Certificate transparency logs to ensure good behavior
+- smth abt how forging a cert to have your own public key destroys the CA sig
+
+
 # Digital Certificates
 
 Every digital certificate contains a BUNCH of things: the names of the subject and issuer, a public key associated with the subject, and CRL/OCSP info (more on that later). It also contains a digital signature signed by the CA of that certificate. That signature is formed from encoding the certificate itself. To verify a certificate is legit, a so-called verifier needs to obtain the CA's public key. The verifier expects to decrypt the digital signature and get the encoded value of the certificate; if it doesn't, that means there's no way to prove the CA actually issued the certificate.

@@ -18,7 +18,11 @@ I'll focus on [TLS 1.3](https://tls13.xargs.org/), since it's faster than 1.2 an
 5. The client confirms the CA's signature, the certificate verifier, and the message verifier, showing that the certificate is valid and the server actually owns it. 
 6. Then, both client and server generate a session key from the handshake secret. This key will be used to encrypt/decrypt all future messages. 
 
-The certificate is essential to the whole process. Since the handshake setup uses asymmetric encryption, MITM attacks can't just passively listen to communications and decrypt them. They need to actively be involved: setting up TLS sessions of their own between client->MITM and MITM->Server. This means that the MITM must have its own certificate. But with smart CA's, that will never happen, and attackers can't MITM. 
+The certificate is essential to the whole process. Since the handshake setup uses asymmetric encryption, MITM attacks can't just passively listen to communications and decrypt them. They need to actively be involved: setting up TLS sessions of their own between client->MITM and MITM->Server. This means that the MITM must have its own certificate! 
+
+Well, what if it just uses the server certificate? While it can obtain the server certificate, and can't replicate the certificate verify, since that's formed from the certificate's private key signing all previous messages, which include random data from that particular handshake. This means it's impossible for the MITM to reuse that certificate verify on the client, since the contents of what the private key will be signing will be different. Since the MITM doesn't have the server's private key, it can't recreate that message, and therefore can't use the server's certificate. 
+
+What if the MITM gets its own certificate? To be trusted, that certificate needs to be signed by a CA. But with smart CA's, that will never happen, and attackers can't MITM. 
 
 ## Forward Secrecy
 
