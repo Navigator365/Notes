@@ -4,7 +4,7 @@ We want this computation to be **dynamic**, **multicasted** and **asynchronous**
 - Our algorithm should respond to link outages or changes in link weights
 - Our algorithm shouldn't require each router to communicate with every other router. 
 - Our algorithm should function regardless of the order a router receives distance updates from other routers
-## Algorithm
+# Algorithm
 
 To perform distance-vector routing, each router $x$ will need to store the following: 
 - A distance vector $D_x(y) = d$ where $y$ is every other router in our network and $d$ is the distance between $x$ and $y$. 
@@ -17,20 +17,20 @@ First, we initialize our costs and distance vectors:
 - $D_x(n) = cost(x, n) \forall n \in$ neighbors
 - Broadcast the distance vector to our neighbors. 
 
-Then, we'll loop forever doing the following for any given router $x$ on [[Distance Vector Routing#Updates|triggered update or periodic update]]:
+Then, we'll loop forever doing the following for any given router $x$ on [[Distance Vector Routing - RIP#Updates|triggered update or periodic update]]:
 - $\forall y, D_x(y) = min_v(cost(x, v) + D_v(y))$ 
 	- In English, we'll calculate the least-cost path to every router $y$ by, for each $y$, checking the distances using each neighbor $v$ as our next-hop. We'll pick the minimum, and store the chosen $v$ as our next-hop. Finally, we'll update our distance vector with the new least-cost path for each $y$.
 	- This formula is called the Bellman-Ford formula, and is a big thing in DP for you leetcode lovers. 
 - If ANY entry in our distance vector changed, broadcast the distance vector to our neighbors. 
 
 Eventually, the distance vectors in each router will converge with the actual least-cost distances in the network. 
-## Updates
+# Updates
 
 We recalculate our distance vectors on two categories of updates: 
 - **Triggered updates**: Any event. For example, a link cost to a neighbor might change, or we might recieve a distance vector from our neighbor. 
 - **Periodic Updates**: Updates sent over a given interval. These are often used to detect links that are down: if you don't see your neighbors' periodic updates, you know the link between you two is dead. The only other way to detect links that are down is to constantly ping your neighbors, which could be expensive or distracting. 
 
-## Counting to Infinity
+# Counting to Infinity
 
 While distance-vector routing generally works quite well, there are some situations that can put the algorithm in a loop thanks to its asynchronous nature. 
 
