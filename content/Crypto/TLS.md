@@ -24,7 +24,7 @@ Well, what if it just uses the server certificate? While it can obtain the serve
 
 What if the MITM gets its own certificate? To be trusted, that certificate needs to be signed by a CA. But with smart CA's, that will never happen, and attackers can't MITM. 
 
-## Forward Secrecy
+### Forward Secrecy
 
 So about those encryption methods TLS 1.3 removed - what made them bad? Many lacked forward secrecy, where compromise of a single session key doesn't jeopardize data in any other session. Forward secrecy demands 2 things: 
 - A unique session key for every session 

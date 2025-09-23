@@ -4,7 +4,7 @@ We want this computation to be **dynamic**, **anycasted** and **resilient**:
 - Our algorithm should respond to link outages or changes in link weights
 - Our algorithm should give each router a full view of the network topology. 
 - Our algorithm should prevent errors or incorrect behavior in one router from cascading and affecting other routers. 
-# Transmission
+## Transmission
 
 For each node to be capable of running Dijkstra's on its own, it needs a complete view of the network. We provide this through Link State Packets (LSP), which provide the costs of a node's neighbors, just like Distance Vector. Also like Distance Vector, we'll send these LSP's both periodically and in response to link cost changes. 
 
@@ -26,7 +26,7 @@ When a router receives an LSP, it performs the following process:
 
 This process helps flooding end quickly, minimizing the overhead required for Link State. To save on storage and prevent old data from persisting, the TTL of an LSP is decremented every flood. When a TTL becomes 0, the node that last decremented it will flood the network with that 0 TTL, which will tell all routers to remove from storage LSPs with that ID and sequence number. 
 
-# Algorithm
+## Algorithm
 
 Let's say router $A$ has LSPs for all other nodes in the graph. We'll now calculate least-cost paths from $A$ to all other nodes. We'll do Dijkstra's while taking advantage of the format of LSPs. 
 
@@ -40,7 +40,7 @@ $A$ stores 2 lists, $T$ and $C = \{A\}$. The elements of each are tuples of the 
 - Pick the smallest entry in $T$ and move it to $C$. 
 
 This isn't so dissimilar to normal Dijkstra's. The main distinction comes in how we're storing neighbors. We don't need to reconstruct the path: all we really care about is who to send to next. Therefore, we only keep track of NextHops, and propagate them along distance nodes, so we don't store unnecessary information. 
-# Advantages over Distance Vector 
+## Advantages over Distance Vector 
 
 In general, Link State routing has more predictable numbers of messages sent and speed of convergence, and its upper bounds on both are far less than those of Distance Vector routing. 
 
