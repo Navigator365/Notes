@@ -25,7 +25,9 @@ But what if we miss a fragment in the middle? IP doesn't guaruntee reliability, 
 You might be reading this and think "Hey, wouldn't IPv6 require fragmentation too?" Yes, but those problems are dealt with by the host through MTU path discovery, where hosts determine the minimal MTU along the path to the receiver. Then, the host can prefragment its data before sending.  
 
 
-FLAGS: DF=1, don't fragment, MF=1, more fragments, 0 if last fragment. 
+FLAGS: DF=1, don't fragment, MF=1, more fragments, 0 if last fragment. If DF=1 and MTU too small, drop the packet. 
+
+REMEMBER: The packet length field includes the header, to so to figure out how much data we have to fragment, subtract header length. Then when fragmenting, include header size in the packet length field along with size of data sending. 
 ## Addressing 
 
 IP addresses are 32-bit addresses separated into byte-blocks with a`.`, which we call dotted-quad notation. IP is designed to facilitate internetworking, so we need to have some concept of what larger network we're a part of, and a unique host identifier. When combined, each IP address should be globally unique and hierarchical (network/host). 

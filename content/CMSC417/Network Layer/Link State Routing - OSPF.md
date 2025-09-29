@@ -24,7 +24,7 @@ When a router receives an LSP, it performs the following process:
 	- No! I'll store it and forward it to all my neighbors, except for the one that sent the LSP to me
 ![[Pasted image 20250921211412.png]]
 
-This process helps flooding end quickly, minimizing the overhead required for Link State. To save on storage and prevent old data from persisting, the TTL of an LSP is decremented every flood. When a TTL becomes 0, the node that last decremented it will flood the network with that 0 TTL, which will tell all routers to remove from storage LSPs with that ID and sequence number. 
+This process helps flooding end quickly, minimizing the overhead required for Link State. To save on storage and prevent old data from persisting, the TTL of an LSP is decremented every flood. When a TTL becomes 0, that router doesn't forward the LSP. 
 
 ## Algorithm
 
