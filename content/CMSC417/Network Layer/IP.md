@@ -62,6 +62,8 @@ We'll derive our internal network ids, called subnet ids, by ANDing our host add
 
 We can form multiple subnets out of a single mask: for example, we can mask based on whether one bit is set or not, and produce 2 subnets from the IPs we have assigned to us. 
 
+When deriving masks, think about which place-values shouldn't be part of the host values: those are the ones that should be 1s in your bitmask! If all else fails, use / notation!
+
 
 #### Forwarding
 Subnetting does complicate forwarding a little bit: instead of just storing the network id, we'll store (subnet id, subnet mask, next hop) of each router, and only route to an entry's next hop if our destination ip addr & that entry's netmask = that entry's subnet id. 
