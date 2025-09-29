@@ -24,6 +24,8 @@ But what if we miss a fragment in the middle? IP doesn't guaruntee reliability, 
 
 You might be reading this and think "Hey, wouldn't IPv6 require fragmentation too?" Yes, but those problems are dealt with by the host through MTU path discovery, where hosts determine the minimal MTU along the path to the receiver. Then, the host can prefragment its data before sending.  
 
+
+FLAGS: DF=1, don't fragment, MF=1, more fragments, 0 if last fragment. 
 ## Addressing 
 
 IP addresses are 32-bit addresses separated into byte-blocks with a`.`, which we call dotted-quad notation. IP is designed to facilitate internetworking, so we need to have some concept of what larger network we're a part of, and a unique host identifier. When combined, each IP address should be globally unique and hierarchical (network/host). 
@@ -36,9 +38,8 @@ Incidentally, probability tells us that using this scheme, half of all addresses
 If you want to get IP addresses from ICANN/RIRs, you can only do so in fixed-size blocks under classfull addressing. For example, if you have 10 million hosts or 66,000, you'll both need to buy out a class A network ID to populate with your host IDs. As you might imagine, this uses up our available address space very quickly, which is not good if we want the Internet to keep expanding!
 
 This strategy also takes up space in router forwarding tables: every time a new block is registered, that's another unique network ID for routers to keep track of. We don't want degraded performance either! 
-### Subnetting 
 
-## Forwarding
+### Forwarding 
 
 Forwarding, or the process of sending data to the next interface, uses the algorithm below. Each router stores a forwarding table, containing mappings from network ID -> next hop for given network IDs, those that are part of its interfaces, and a default router (since obviously no router can store every network ID, so if we don't find a match just send it there). The algorithm is as follows: 
 
@@ -53,4 +54,34 @@ else
 ```
 
 By only using network numbers instead of host numbers, we drastically reduce the amount of information routers have to store. Now that we know where to send, we'll use ARP to begin the process of sending. 
+### Subnetting
+
+We have some range of IPs assigned to us. Most likely, they're all inside a single class block. That means we have a single network ID to work with. But what if we want to host multiple internal networks? We don't want to buy another identifier block, since all these internal networks should resolve to the same network on the outside. We'll do something called subnetting. 
+
+We'll derive our internal network ids, called subnet ids, by ANDing our host addresses and a subnet mask that every host knows about. We can derive the subnet mask based on the max amount of  hosts we expect any of our subnets to have, and use the remaining bits as part of the mask. When calculated, subnet ids will act as network ids within our network. 
+
+We can form multiple subnets out of a single mask: for example, we can mask based on whether one bit is set or not, and produce 2 subnets from the IPs we have assigned to us. 
+
+
+#### Forwarding
+Subnetting does complicate forwarding a little bit: instead of just storing the network id, we'll store (subnet id, subnet mask, next hop) of each router, and only route to an entry's next hop if our destination ip addr & that entry's netmask = that entry's subnet id. 
+### CIDR
+
+Classless Interdomain Routing is the solution to all our IP utilization problems! Instead of having to use a dedicated IP block, we'll be able to specify how many bit we'll need to identify all the hosts on all the networks we own, and in turn reserve only 1 network id for our entire organization. 
+
+One important clarification: this is not the same as subnetting! We're not trying to divy up internal networks, but allocate IPs in a way that reduces their consumption and reduces route table storage. 
+
+Here's how it works:  say we own 255.255.254.0/23. The slash notation means that the first 23 bits (called a **prefix**) of the IP are common to all of our addresses, and we own all possible values of the last 32-23= 9 bits. This way, every public router just has to store 255.255.254.0/23 in their routing tables, rather than clogging themselves up with our many hosts.
+
+We can chain applications to CIDR to be precise in our allocations. For example, an ISP can aggregate results from nearby addresses 128.122.128/24 128.122.129/24.... into one external 128.112.128/21. We call this, unsurprisingly, **address aggregation**, and it further reduces routing table storage. 
+
+![[Pasted image 20250929175929.png]]
+
+#### Forwarding
+
+CIDR also complicates forwarding. Now we store our prefixes in our routing tables, which can overlap. If we're trying to send something to address 201.10.6.17, should we listen to the entry for 201.10.0.0/21 or 201.10.6.0/23? 
+
+The solution: we'll route to the longest-matching prefix in our routing table. There are some clever algorithms to do this quickly, but they're outside the scope of this class. 
+
+
 TODO: Link when arp covered
