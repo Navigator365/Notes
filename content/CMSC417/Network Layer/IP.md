@@ -27,7 +27,7 @@ You might be reading this and think "Hey, wouldn't IPv6 require fragmentation to
 
 FLAGS: DF=1, don't fragment, MF=1, more fragments, 0 if last fragment. If DF=1 and MTU too small, drop the packet. 
 
-REMEMBER: The packet length field includes the header, to so to figure out how much data we have to fragment, subtract header length. Then when fragmenting, include header size in the packet length field along with size of data sending. 
+REMEMBER: The packet length field includes the header, to so to figure out how much data we have to fragment, subtract header length. Then when fragmenting, include header size in the packet length field along with size of data sending. Also, offset == actual offset / 8
 ## Addressing 
 
 IP addresses are 32-bit addresses separated into byte-blocks with a`.`, which we call dotted-quad notation. IP is designed to facilitate internetworking, so we need to have some concept of what larger network we're a part of, and a unique host identifier. When combined, each IP address should be globally unique and hierarchical (network/host). 
@@ -58,7 +58,7 @@ else
 By only using network numbers instead of host numbers, we drastically reduce the amount of information routers have to store. Now that we know where to send, we'll use ARP to begin the process of sending. 
 ### Subnetting
 
-We have some range of IPs assigned to us. Most likely, they're all inside a single class block. That means we have a single network ID to work with. But what if we want to host multiple internal networks? We don't want to buy another identifier block, since all these internal networks should resolve to the same network on the outside. We'll do something called subnetting. 
+We have some range of IPs assigned to us. Most likely, they're all inside a single class block. That means we have a single network ID to work with. But what if we want to host and segment multiple internal networks? We don't want to buy another identifier block, since all these internal networks should resolve to the same network on the outside. We'll do something called subnetting. 
 
 We'll derive our internal network ids, called subnet ids, by ANDing our host addresses and a subnet mask that every host knows about. We can derive the subnet mask based on the max amount of  hosts we expect any of our subnets to have, and use the remaining bits as part of the mask. When calculated, subnet ids will act as network ids within our network. 
 
@@ -69,6 +69,25 @@ When deriving masks, think about which place-values shouldn't be part of the hos
 
 #### Forwarding
 Subnetting does complicate forwarding a little bit: instead of just storing the network id, we'll store (subnet id, subnet mask, next hop) of each router, and only route to an entry's next hop if our destination ip addr & that entry's netmask = that entry's subnet id. 
+
+Our new psuedocode: 
+```
+D = destination IP address
+for each forwarding table entry (SubnetNumber, SubnetMask, NextHop)
+    D1 = SubnetMask & D
+    if D1 = SubnetNumber
+        if NextHop is an interface
+            deliver datagram directly to destination
+        else
+            deliver datagram to NextHop (a router)
+```
+
+### Special IPs
+
+Before we go any further, let's explain 2 special IPs: 
+- an address with host bits all set to 0 is the "network address", used to identify the network, and is not assigned to a host
+- an address with host bits all set to 1 is a "broadcast" address, which routers will interpret as a command to send the message to all devices on the subnet
+
 ### CIDR
 
 Classless Interdomain Routing is the solution to all our IP utilization problems! Instead of having to use a dedicated IP block, we'll be able to specify how many bit we'll need to identify all the hosts on all the networks we own, and in turn reserve only 1 network id for our entire organization. 
@@ -87,5 +106,18 @@ CIDR also complicates forwarding. Now we store our prefixes in our routing table
 
 The solution: we'll route to the longest-matching prefix in our routing table. There are some clever algorithms to do this quickly, but they're outside the scope of this class. 
 
+### DHCP
 
-TODO: Link when arp covered
+Regardless of how we allocate IP addresses, we still need a way of assigning them to every host on our network. While we can manually do so, that doesn't scale well, and doesn't work for mobile technologies (say, someone who uses their laptop in a lecture hall and at their dorm room -> likely different subnets).
+
+DHCP servers can dynamically configure hosts with IP addresses without manual user or network administrator intervention. Here's how they work: 
+![[Pasted image 20251004184408.png]]
+
+1. DHCP discover: A client broadcasts a discover message, checking if a DHCP server exists. Since the client doesn't have an IP address yet (that's the whole point), we use the source IP 0.0.0.0 (which basically translates to the default route when interpreted by the router). The client includes a transaction ID, which will be included in all future messages in this exchange, so that it knows which server responses are talking to this particular client. 
+2. . There will either be a DHCP server on the network or least one DHCP relay agent on the network, which will communicate with a DHCP sever. In any case, this server will broadcast (ie, send to everyone on the network, since there's no host IP to send to yet) a DHCP offer, with a proposed IP address, subnet mask, and a *lease time*, or how long that particular IP address would remain valid for if a host chose it. 
+3. The client listens to incoming messages and grabs a DHCP message with the right transaction ID. It sends a DHCP request echoing back the server's parameters. 
+4. The server sends an Ack confirming IP assignment. 
+
+Later on, the client and server can communicate to renew an address's lease. 
+
+DHCP does have one big downside: it doesn't scale past subnets. Every time a host joins a new subnet, it's assigned a new IP address, which will terminate any existing remote connections. For a highly mobile device, this is undesirable. Maybe we'll cover some solutions to this problem...
