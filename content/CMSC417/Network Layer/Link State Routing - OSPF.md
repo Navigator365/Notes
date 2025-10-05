@@ -6,7 +6,7 @@ We want this computation to be **dynamic**, **anycasted** and **resilient**:
 - Our algorithm should prevent errors or incorrect behavior in one router from cascading and affecting other routers. 
 ## Transmission
 
-For each node to be capable of running Dijkstra's on its own, it needs a complete view of the network. We provide this through Link State Packets (LSP), which provide the costs of a node's neighbors, just like Distance Vector. Also like Distance Vector, we'll send these LSP's both periodically and in response to link cost changes. 
+For each node to be capable of running Dijkstra's on its own, it needs a complete view of the network. We provide this through Link State Packets (LSP), which provide the costs to each of the node's neighbors, unlike Distance Vector which gives the minimal distance to each of them. Also like Distance Vector, we'll send these LSP's both periodically and in response to link cost changes. 
 
 Each LSP has 4 components: 
 1. The ID of the router that created it

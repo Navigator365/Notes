@@ -114,10 +114,12 @@ DHCP servers can dynamically configure hosts with IP addresses without manual us
 ![[Pasted image 20251004184408.png]]
 
 1. DHCP discover: A client broadcasts a discover message, checking if a DHCP server exists. Since the client doesn't have an IP address yet (that's the whole point), we use the source IP 0.0.0.0 (which basically translates to the default route when interpreted by the router). The client includes a transaction ID, which will be included in all future messages in this exchange, so that it knows which server responses are talking to this particular client. 
-2. . There will either be a DHCP server on the network or least one DHCP relay agent on the network, which will communicate with a DHCP sever. In any case, this server will broadcast (ie, send to everyone on the network, since there's no host IP to send to yet) a DHCP offer, with a proposed IP address, subnet mask, and a *lease time*, or how long that particular IP address would remain valid for if a host chose it. 
+2. . A DHCP server will broadcast (ie, send to everyone on the network, since there's no host IP to send to yet) a DHCP offer, with a proposed IP address, subnet mask, and a *lease time*, or how long that particular IP address would remain valid for if a host chose it. 
 3. The client listens to incoming messages and grabs a DHCP message with the right transaction ID. It sends a DHCP request echoing back the server's parameters. 
 4. The server sends an Ack confirming IP assignment. 
 
 Later on, the client and server can communicate to renew an address's lease. 
 
-DHCP does have one big downside: it doesn't scale past subnets. Every time a host joins a new subnet, it's assigned a new IP address, which will terminate any existing remote connections. For a highly mobile device, this is undesirable. Maybe we'll cover some solutions to this problem...
+DHCP does have one big downside: it doesn't scale past subnets. To reach a DHCP server, we send a broadcast message, which is only sent to devices on our subnet. If we don't have a DHCP server on our subnet, are we out of luck?
+
+NO! We can use a DHCP relay. Some device on our network will know the location of a DHCP server, and relay DHCP discover broadcasts and DHCP server responses. The DHCP server will also figure out the client's subnet, and assign an IP that's on that subnet. 
