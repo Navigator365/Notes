@@ -1,6 +1,6 @@
 Our network is a graph, with nodes as routers and edges as links. These edges are weighted with what I'll call costs. We want to compute the least-cost distance to each router for all routers in our network. 
 
-We want this computation to be **dynamic**, **anycasted** and **resilient**: 
+We want this computation to be **dynamic**, **broadcasted** and **resilient**: 
 - Our algorithm should respond to link outages or changes in link weights
 - Our algorithm should give each router a full view of the network topology. 
 - Our algorithm should prevent errors or incorrect behavior in one router from cascading and affecting other routers. 

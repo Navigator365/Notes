@@ -9,7 +9,7 @@ Let's start by taking a look at an IPv4 datagram (we call network-layer packets 
 Everything before data is all a part of the header, arranged in 32-bit/4 byte rows. 
 
 Some info on the non-obvious/interesting fields: 
-- **Type of service**: Is it real-time or not? 
+- **Type of service**: Is it real-time or not (FTP)? 
 - **16-bit identifier/flags/fragmentation offset**: These all handle fragmentation, where a large datagram is decomposed into smaller datagrams, forwarded separately, then reassembled. Even though IPv6 doesn't care about fragmentation, 417 does so I'll cover it later. 
 - **Header checksum**: A checksum formed from the datagram header; if a reciever computes a checksum out of the headers and gets a different result than the value in the header checksum field, some error or corruption has occurred.
 - **Options**: a terrible idea. Originally designed to allow datagrams to optionally specify more fields. However, options can be of variable length, so it's not easy to tell where the data begins. Therefore, every IPv4 datagram must be scanned through to check for an option, and then process the option if it exists. This is not ideal for high-performance networking, so IPv6 doesn't have it. 
