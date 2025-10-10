@@ -35,7 +35,7 @@ $A$ stores 2 lists, $T$ and $C = \{A\}$. The elements of each are tuples of the 
  If it's our first iteration or $T \neq \emptyset$ : 
 - Take the most-recently added element of $C$ and call it $N$. Grab $N$'s LSP. 
 - For each neighbor $n$ of $N$, its cost $cost_n$ = $cost(A, N) + cost(N, n)$. 
-	- If $n \notin C$ AND $n \notin T$, append $(n, cost_n, NextHop)$ where NextHop is $N's$ next-hop. 
+	- If $n \notin C$ AND $n \notin T$, append $(n, cost_n, NextHop)$ to $T$ where NextHop is $N's$ next-hop. 
 	- If $n \in C$ and $cost_n$ is less than $n$'s cost in $C$ currently, replace its entry with $(n, cost_n, NextHop)$. 
 - Pick the smallest entry in $T$ and move it to $C$. 
 
