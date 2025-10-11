@@ -86,7 +86,8 @@ for each forwarding table entry (SubnetNumber, SubnetMask, NextHop)
 
 Before we go any further, let's explain 2 special IPs: 
 - an address with host bits all set to 0 is the "network address", used to identify the network, and is not assigned to a host
-- an address with host bits all set to 1 is a "broadcast" address, which routers will interpret as a command to send the message to all devices on the subnet
+- an address with host bits all set to 1 is a "broadcast" address, which routers will interpret as a command to send the message to all devices on the subnet (if we're sending this from another subnet, it's called a *directed broadcast*)
+	- *Limited broadcasts* are a special type of broadcast, 255.255.255.255, which will never be forwarded by routers. 
 
 ### CIDR
 
@@ -106,15 +107,18 @@ CIDR also complicates forwarding. Now we store our prefixes in our routing table
 
 The solution: we'll route to the longest-matching prefix in our routing table. There are some clever algorithms to do this quickly, but they're outside the scope of this class. 
 
-### DHCP
+## DHCP
 
 Regardless of how we allocate IP addresses, we still need a way of assigning them to every host on our network. While we can manually do so, that doesn't scale well, and doesn't work for mobile technologies (say, someone who uses their laptop in a lecture hall and at their dorm room -> likely different subnets).
 
 DHCP servers can dynamically configure hosts with IP addresses without manual user or network administrator intervention. Here's how they work: 
 ![[Pasted image 20251004184408.png]]
 
-1. DHCP discover: A client broadcasts a discover message, checking if a DHCP server exists. Since the client doesn't have an IP address yet (that's the whole point), we use the source IP 0.0.0.0 (which basically translates to the default route when interpreted by the router). The client includes a transaction ID, which will be included in all future messages in this exchange, so that it knows which server responses are talking to this particular client. 
-2. . A DHCP server will broadcast (ie, send to everyone on the network, since there's no host IP to send to yet) a DHCP offer, with a proposed IP address, subnet mask, and a *lease time*, or how long that particular IP address would remain valid for if a host chose it. 
+1. DHCP discover: A client broadcasts a discover message, checking if a DHCP server exists. Since the client doesn't have an IP address yet (that's the whole point), we use the source IP 0.0.0.0 (which basically translates to the default route when interpreted by the router). We use a limited broadcast as a destination, so we send this to everyone on our local network segment. The client includes a randomly-generated transaction ID, which will be included in all future messages in this exchange, so that it knows which server responses are talking to this particular client. Since two hosts could produce the same transaction ID, layer 2 communications include their MAC addresses, so the DHCP server can differentiate between two identical transaction IDs. 
+2. . A DHCP server will broadcast (ie, send to everyone on the network, since there's no host IP to send to yet) a DHCP offer, with a proposed IP address,and a *lease time*, or how long that particular IP address would remain valid for if a host chose it. It can send other info too: 
+	1. Address of the first-hop router
+	2. name and IP of a DNS server
+	3. subnet mask of the IP
 3. The client listens to incoming messages and grabs a DHCP message with the right transaction ID. It sends a DHCP request echoing back the server's parameters. 
 4. The server sends an Ack confirming IP assignment. 
 
@@ -123,3 +127,16 @@ Later on, the client and server can communicate to renew an address's lease.
 DHCP does have one big downside: it doesn't scale past subnets. To reach a DHCP server, we send a broadcast message, which is only sent to devices on our subnet. If we don't have a DHCP server on our subnet, are we out of luck?
 
 NO! We can use a DHCP relay. Some device on our network will know the location of a DHCP server, and relay DHCP discover broadcasts and DHCP server responses. The DHCP server will also figure out the client's subnet, and assign an IP that's on that subnet. 
+- The relay will add *Option 82* to the DHCP server, characterizing the specific remote network the server will be talking to. 
+
+## NAT
+
+When we connect a small office to a WAN, we'd need to allocate public-facing IPs for each device on the network. That's a lot of work. I guess DHCP could do it, but then that's a lot of addresses to issue. *Network Address Translation* (NAT) is a hack that allows us to get our home networks online while minimizing our IP usage. Here's how it works: 
+- Our NAT-enabled router has a publicly-facing IP address assigned to it, often from an ISP's DHCP server. 
+- Devices on our network are assigned private IPs (10/8, 172, 192). These don't route anywhere on the Internet, and the same IP can be used by thousands of devices around the world simultaneously, without any knowledge of each other. They're often assigned via a NAT-DHCP server run by the router. 
+- When a device on the network sends a request to a public IP, our router will store its IP and port in the NAT table, and map it to one of its publicly facing IPs and a currently unused port. This IP and port will replace the IP and port in any packets from the device that the router sends out. These are then sent on the public Internet. 
+- When a response comes back from the Internet, the router looks in the WAN side of its NAT table for the IP and port, and finds the private IP and port that corresponds. Then, it will replace the IP and port with what it found, and send that along the network. 
+![[Pasted image 20251010200944.png]]
+In this way, nearly $2^{16}$ devices on a private network can be serviced simultaneously through a single router with a single public IP. By separating public IP allocation from host setup, we can allow both to change without affecting the other. We can add or remove hosts without needing to deal with allocation, our ISP can change the IP allocated to us without having to reallocate all our hosts, all while ensuring nobody from the outside world can connect to our devices explicitly (unless they're able to infer the contents of our NAT table).  
+
+However, NAT introduces some new problems. How can an external IP reach out to a device behind a NAT server if that device hasn't talked to the IP before? Say, a client connecting to a server hosted behind a NAT.  
