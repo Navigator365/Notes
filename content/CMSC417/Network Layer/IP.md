@@ -12,6 +12,7 @@ Some info on the non-obvious/interesting fields:
 - **Type of service**: Is it real-time or not (FTP)? 
 - **16-bit identifier/flags/fragmentation offset**: These all handle fragmentation, where a large datagram is decomposed into smaller datagrams, forwarded separately, then reassembled. Even though IPv6 doesn't care about fragmentation, 417 does so I'll cover it later. 
 - **Header checksum**: A checksum formed from the datagram header; if a reciever computes a checksum out of the headers and gets a different result than the value in the header checksum field, some error or corruption has occurred.
+- **Time to live:** How many hops an IP datagram should last for. Every receiver decrements the TTL before sending it. When a receiver notices a datagram's TTL is 0, it will send back an [[IP#ICMP|ICMP]] warning message to the source. 
 - **Options**: a terrible idea. Originally designed to allow datagrams to optionally specify more fields. However, options can be of variable length, so it's not easy to tell where the data begins. Therefore, every IPv4 datagram must be scanned through to check for an option, and then process the option if it exists. This is not ideal for high-performance networking, so IPv6 doesn't have it. 
 
 ###  Fragmentation
@@ -140,3 +141,27 @@ When we connect a small office to a WAN, we'd need to allocate public-facing IPs
 In this way, nearly $2^{16}$ devices on a private network can be serviced simultaneously through a single router with a single public IP. By separating public IP allocation from host setup, we can allow both to change without affecting the other. We can add or remove hosts without needing to deal with allocation, our ISP can change the IP allocated to us without having to reallocate all our hosts, all while ensuring nobody from the outside world can connect to our devices explicitly (unless they're able to infer the contents of our NAT table).  
 
 However, NAT introduces some new problems. How can an external IP reach out to a device behind a NAT server if that device hasn't talked to the IP before? Say, a client connecting to a server hosted behind a NAT.  
+
+## ICMP
+
+While not a part of the IP protocol, ICMP is commonly associated with it. ICMP messages are carried in the bodies of IP datagrams. Let's talk about their structure: 
+- A header and type code to refer to the specific error/control message the ICMP message represents
+- The first 8 bytes of the IP datagram that prompted the receiver to send an ICMP message back to the sender. This lets the sender determine which of the datagrams they sent prompted the ICMP message. 
+ICMP is generally used for error messaging, though it's also used for traceroute, since receivers will send an ICMP warning back to the sender if an IP datagram's TTL reaches 0. 
+
+## Tunneling
+
+Tunneling refers to the general process of connecting two networks through an abstracted "third network", with traffic from either end passing through a gateway connected to a gateway on the other side of this intermediate tunnel, encapsulating IP datagrams from one network with an IP datagram sent from one gateway to another. This process also encrypts network traffic in these gateway datagram bodies. 
+
+![[Pasted image 20251018143625.png]]
+
+Some advantages: 
+- Increased security (avoiding potentially untrusted middlemen)
+- Improved support for heterogenous networks/routers: Instead of having to figure out how to connect two differently-structured devices/networks together, we can wrap them in another network to share information between them
+- Multicast? Don't really understand this point (TODO FOLLOW UP)
+Some disadvantages: 
+- This process increases packet length, which 
+	- Wastes bandwitdth
+	- Increases router processing delay
+	- Can lead to fragmentation, and therefore reduced performance, on IPv4
+- This increases the work network administrators have to do (this is definitely not plug-and-play)
