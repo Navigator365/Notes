@@ -1,7 +1,7 @@
 The ultimate network layer protocol, and probably even one of the ultimate Internet protocols, besides BGP. 
 
 The basic idea: the IP protocol will deliver our data between different networks on a best-effort basis (reliability not guaranteed). 
-## The IPv4 Datagram View
+## IPv4
 
 Let's start by taking a look at an IPv4 datagram (we call network-layer packets *datagrams*):
 ![[Pasted image 20250923114755.png]]
@@ -9,9 +9,9 @@ Let's start by taking a look at an IPv4 datagram (we call network-layer packets 
 Everything before data is all a part of the header, arranged in 32-bit/4 byte rows. 
 
 Some info on the non-obvious/interesting fields: 
-- **Type of service**: Is it real-time or not (FTP)? 
+- **Type of service**: Distinguishes types of datagrams (for example, Is it real-time or not?) 
 - **16-bit identifier/flags/fragmentation offset**: These all handle fragmentation, where a large datagram is decomposed into smaller datagrams, forwarded separately, then reassembled. Even though IPv6 doesn't care about fragmentation, 417 does so I'll cover it later. 
-- **Header checksum**: A checksum formed from the datagram header; if a reciever computes a checksum out of the headers and gets a different result than the value in the header checksum field, some error or corruption has occurred.
+- **Header checksum**: A checksum formed from the datagram header; if a reciever computes a checksum out of the headers and gets a different result than the value in the header checksum field, some error or corruption has occurred. If you're thinking this is redundant since Transport and Link layers do some type of checksumming, you're right! IPv6 doesn't have this. 
 - **Time to live:** How many hops an IP datagram should last for. Every receiver decrements the TTL before sending it. When a receiver notices a datagram's TTL is 0, it will send back an [[IP#ICMP|ICMP]] warning message to the source. 
 - **Options**: a terrible idea. Originally designed to allow datagrams to optionally specify more fields. However, options can be of variable length, so it's not easy to tell where the data begins. Therefore, every IPv4 datagram must be scanned through to check for an option, and then process the option if it exists. This is not ideal for high-performance networking, so IPv6 doesn't have it. 
 
@@ -28,7 +28,22 @@ You might be reading this and think "Hey, wouldn't IPv6 require fragmentation to
 
 FLAGS: DF=1, don't fragment, MF=1, more fragments, 0 if last fragment. If DF=1 and MTU too small, drop the packet. 
 
-REMEMBER: The packet length field includes the header, to so to figure out how much data we have to fragment, subtract header length. Then when fragmenting, include header size in the packet length field along with size of data sending. Also, offset == actual offset / 8
+## IPv6
+
+
+![[Pasted image 20251020214829.png]]
+
+Some discussion on fields:
+- **Traffic class**: Similar to Type of Service in IPv4, only this time based on priority rather than strictly type. Allows certain datagram types to be marked as "higher priority"
+- **Flow label**: Some traffic flows may have special properties, like real-time service or audio-visual transmission, that distinguish them from normal traffic. This field identifies a datagram as part of a larger flow. 
+- **Payload length**: NO MORE PACKET LENGTH! Since the packet is fixed-size and we only care about data, payload length is just the size of our payload.
+- **Next hdr**: The protocol we're delivering datagram contents to (TCP, UDP)
+- **Hop limit**: TTL but no longer confusingly-named "time"
+
+IPv6 gives us some more communication options: 
+![[Pasted image 20251020222758.png]]
+
+To handle connections through networks where not all devices support IPv6, we can use tunneling by wrapping IPv6 packets inside IPv4 packets. 
 ## Addressing 
 
 IP addresses are 32-bit addresses separated into byte-blocks with a`.`, which we call dotted-quad notation. IP is designed to facilitate internetworking, so we need to have some concept of what larger network we're a part of, and a unique host identifier. When combined, each IP address should be globally unique and hierarchical (network/host). 
