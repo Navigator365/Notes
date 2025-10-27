@@ -9,7 +9,7 @@ Here, the post office is the network layer: it handles delivery. Meanwhile, the 
 
 
 We use 2 transport layer protocols: 
-- UDP (User Datagram Protocol, connectionless)
+- [[UDP - User Datagram Protocol|UDP (User Datagram Protocol, connectionless)]]
 - TCP (Transport Control Protocol, connection-based, reliable transfer, congestion-controlled)
 
 However, both provide some fundamentals: 
