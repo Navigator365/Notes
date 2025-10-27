@@ -173,7 +173,7 @@ Tunneling refers to the general process of connecting two networks through an ab
 Some advantages: 
 - Increased security (avoiding potentially untrusted middlemen)
 - Improved support for heterogenous networks/routers: Instead of having to figure out how to connect two differently-structured devices/networks together, we can wrap them in another network to share information between them
-- Multicast? Don't really understand this point (TODO FOLLOW UP)
+- Better support for multicasting (our gateway can connect us to an arbitrarily-sized network)
 Some disadvantages: 
 - This process increases packet length, which 
 	- Wastes bandwitdth
