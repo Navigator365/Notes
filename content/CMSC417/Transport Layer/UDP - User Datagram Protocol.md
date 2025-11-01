@@ -16,8 +16,8 @@ We actually compute the checksum by taking our data, splitting the data into 16-
 # Why use it?
 
 With no error handling or support for connections, why does anyone use UDP? Well, there are a couple reasons: 
-- Since UDP doesn't have congestion control, you can send what you want whenever you want. Once an application has a message to send, UDP will immediately encapsulate it and pass it to the network layer. 
-- Sometimes you don't want a connection. DNS resolution is a one-time process: once you've got a response from a DNS server, you're done. Setting up a connection every time you'd want to make a DNS request is too slow. 
-- UDP packets are REALLY small: only 8 bytes in the header
+- Fine-grain control/no connection setup delay: Since UDP doesn't have congestion control, you can send what you want whenever you want. Once an application has a message to send, UDP will immediately encapsulate it and pass it to the network layer. 
+- No connection state: Sometimes you don't want a connection. DNS resolution is a one-time process: once you've got a response from a DNS server, you're done. Setting up a connection every time you'd want to make a DNS request is too slow. 
+- Small header overhead: UDP packets are REALLY small: only 8 bytes in the header
 
 Multimedia streaming applications that prioritize live, real-time messaging will use UDP, along with simple query-response protocols like DNS. 

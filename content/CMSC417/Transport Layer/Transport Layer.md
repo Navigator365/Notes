@@ -10,7 +10,17 @@ Here, the post office is the network layer: it handles delivery. Meanwhile, the 
 
 We use 2 transport layer protocols: 
 - [[UDP - User Datagram Protocol|UDP (User Datagram Protocol, connectionless)]]
+	- We'd use this if we don't care about reliable, which we define as at least one of 
+		- Guaranteed delivery
+		- Ordered delivery
+		- At most one copy of the message
 - TCP (Transport Control Protocol, connection-based, reliable transfer, congestion-controlled)
+	- Our system has to deal with the underlying network, which we will assume has the following
+		- Packet loss
+		- Out of order delivery
+		- Multiple copies
+		- Delay variations
+		- A non-zero probability of packet delivery
 
 However, both provide some fundamentals: 
 - (De)multiplexing
