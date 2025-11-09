@@ -51,3 +51,14 @@ https://dl.acm.org/doi/pdf/10.1145/3618305.3623604
 
 
 
+# Bittorrent
+
+Uploading: generate a .torrent file for a given file on user system
+	- announce to the tracker  (the same one as in the torrent)"I exist" with this file (left=0)
+	- embed tracker information in .torrent file
+	- keep client running so somebody can access all this stuff
+Note: don't have to generate a .torrent if one is already provided; in that case, we just download it and act as a seed at the end
+
+Other hard stuff: need some sort of choking algo as described in the standards
+
+https://blog.jse.li/posts/torrent/
