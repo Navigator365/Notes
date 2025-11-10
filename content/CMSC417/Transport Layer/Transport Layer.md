@@ -14,7 +14,7 @@ We use 2 transport layer protocols:
 		- Guaranteed delivery
 		- Ordered delivery
 		- At most one copy of the message
-- TCP (Transport Control Protocol, connection-based, reliable transfer, congestion-controlled)
+- [[TCP - Transmission Control Protocol|TCP (Transport Control Protocol, connection-based, reliable transfer, congestion-controlled)]]
 	- Our system has to deal with the underlying network, which we will assume has the following
 		- Packet loss
 		- Out of order delivery
