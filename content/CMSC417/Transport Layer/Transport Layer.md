@@ -1,8 +1,6 @@
 ---
 title: Transport Layer
 ---
-
-
 The Transport Layer connects applications running on different hosts. This allows applications to message each other without dealing with network topologies, routing rules, or link connections required to transmit those messages. 
 
 Unlike lower layers, Transport layer protocols are entirely implemented on end systems, not on network routers or links. Here's a useful metaphor to describe the difference between the network layer and the transport layer: 

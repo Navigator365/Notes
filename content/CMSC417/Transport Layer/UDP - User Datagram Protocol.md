@@ -5,7 +5,7 @@ It's basic! It's simple! It's UDP! Apart from multiplexing, it basically passes 
 
 ![[Pasted image 20251027181420.png]]
 
-Pretty basic, just the destination port, the source port to provide return-messaging capability (mentioned in [[content/CMSC417/Transport Layer/index#UDP Multiplexing|UDP multiplexing]]), a checksum, the total segment length (header + data), and the data. We need length, since the size of a UDP segment varies based on its data. 
+Pretty basic, just the destination port, the source port to provide return-messaging capability (mentioned in [[Transport Layer#UDP Multiplexing|UDP multiplexing]]), a checksum, the total segment length (header + data), and the data. We need length, since the size of a UDP segment varies based on its data. 
 # Error Checking
 It does provide end-to-end error checking through a checksum on the whole segment, which IP doesn't provide (v4 only checksums its headers). But link-layer protocols like Ethernet do! What gives? Well, those protocols help us detect errors in link transmission. It's still possible for routers to corrupt segments they're storing in their memories prior to transmission, and not all link-layer protocols provide error detection. 
 
