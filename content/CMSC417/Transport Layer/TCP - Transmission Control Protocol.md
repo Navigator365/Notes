@@ -94,7 +94,7 @@ The receiver keeps track of an **advertised window**, which it derives from calc
 Note that while the buffer size is fixed by the receiver, the other two variables are dynamic based on the connection (receieved) and internal processing (read), so the advertised window is dynamic as well. The receiver includes this in its TCP header. 
 
 The sender grabs this advertised window out from the headers of ACKs, and compares it to the amount of unACK'd data it's sent out, or LastByteSent - LastByteAcked. Before sending any more segments out, the sender checks that 
-	LastByteSent - LastByteAcked <= advertised window
+	LastByteSent - LastByteAcked $\leq$ advertised window
 
 There's one more thing we need to do: if the advertised window ever becomes 0 whenever the receiver is full, the sender will not know when the receiver's buffer is no longer full (unless the receiver starts sending its own messages to the sender). So, the sender will probe the receiver by sending 1-byte segments, which the receiver will acknowledge, until the advertised window is no longer 0. 
 
