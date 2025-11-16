@@ -1,4 +1,4 @@
-\Our network is a graph, with nodes as routers and edges as links. These edges are weighted with what I'll call costs. We want to compute the least-cost distance to each router for all routers in our network. 
+Our network is a graph, with nodes as routers and edges as links. These edges are weighted with what I'll call costs. We want to compute the least-cost distance to each router for all routers in our network. 
 
 We want this computation to be **dynamic**, **multicasted** and **asynchronous**: 
 - Our algorithm should respond to link outages or changes in link weights
