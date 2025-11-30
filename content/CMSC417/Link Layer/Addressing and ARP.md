@@ -1,6 +1,8 @@
 At the link layer, we deal with moving information between individual nodes within a network. Like IP, we use an addressing scheme to uniquely identify hosts. However, that's where most of the similarities end. 
  > [!Why not just use IP addresses?]
  > If we did, then we'd have to pass link-layer packets "up" to the network layer, checking to see if the destination IP matches our IP. Not only does this violate encapsulation, but this means we'd have to repeat this process for every packet our interface picks up, even if they're not destined for us. Wasteful! Bad!
+ > 
+ > Also, we need to talk to devices before we've assigned them an IP (in many cases, TO assign them an IP). So, we need an identifier we can use before then.
 # MAC Addresses
 
 MAC addresses are 48 bits, split into 6 octets. The first 3 octets are the OUI, referring to blocks of addresses bought out by manufacturers. Speaking of manufacturers, MACs are hardware-defined, unique to the hardware of a network interface present in a device. 

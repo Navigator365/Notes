@@ -123,7 +123,7 @@ We follow an additive increase, multiplicative decrease (AIMD) strategy: wheneve
 
 Modern TCP congestion control has 3 states, slow start, congestion control, and fast recovery. We'll cover each 3 below. Also note that we're using fast retransmit here, meaning 3 duplicate acks (dupacks) means we can assume we've lost a segment. 
 
-- **Slow start**: When a TCP connection begins, we set cwnd = 1, but we know this isn't close to our actual capacity. We'll also set our ssthreshlod (slow-start threshold) to some default value, if it hasn't been set already. We'll increment our cwnd for every acknowledgement a segment receives. This actually looks like an exponential increase, since increasing cwnd means we send more segments which result in more acks and more increments. When do we stop? 
+- **Slow start**: When a TCP connection begins, we set cwnd = 1, but we know this isn't close to our actual capacity. We'll also enter this state if our connection goes idle for a while. We'll also set our ssthreshlod (slow-start threshold) to some default value, if it hasn't been set already. We'll increment our cwnd for every acknowledgement a segment receives. This actually looks like an exponential increase, since increasing cwnd means we send more segments which result in more acks and more increments. When do we stop? 
 	- **Loss due to timeout**: reset cwnd to 1, ssthresh = cwnd/2, and begin slow start again
 	- **Loss due to 3 dupacks**: Transition to fast recovery
 	- **cwnd reaching threshold**: Transition to congestion avoidance
@@ -165,3 +165,10 @@ The network layer can also help prevent congestion control through a couple stra
 	- FIFO scheduling sucks, especially if one type of traffic NEEDS to get there faster
 	- Strict priority scheduling can help those types of traffic by making a queue per priority level, but may starve lower-priority traffic types, since a higher-priority queue may always be sending messages
 	- Weighted fair scheduling splits the queue into multiple queues based on message class, and dedicates sending messages proportionally across each of those queues, ensuring no type will be starved. 
+## TCP Congestion Control Exploits
+
+These are some exploits that basic TCP congestion control is vulnerable to, allowing a malicious connection to force a server to send at an arbitrary rate. 
+
+1. ACK Division: While a sender's in slow-start, we as the receiver can send arbitrarily many ACKs of the same segment we received, arbitrarily (and exponentially, if we do this successively) boosting the cwnd. FIX: Only increase the cwnd when the reciever has ack'd a whole segment. 
+2. In fast retransmit, each duplicate ack expands the cwnd by one. So, we'll send extra duplicate acks, which rapidly expands cwnd. The fix for this is similar: only count dup-acks from separate segments. 
+3. We'll ack packets in advance just to increase cwnd. While this reduces reliability, this does allow us to arbitrarily increase cwnd. The fix for this is more complicated: we'll randomize the segment boundary per-segment, so a receiver won't be able to guess what the next segment boundary will be. If we receive an ack for a segment boundary we didn't set, disregard it. 
