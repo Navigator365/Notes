@@ -15,7 +15,7 @@ While a forwarding table on a router has to be prepopulated by a networking admi
 Every switch has a switch table, storing a mac address, the interface where that mac address should be forwarded to, and the time when that entry was placed in the table. 
 
 Every time a switch receives a frame, it tries the following 2 things: 
-- Check if the source MAC is in the switch table. If not, put the source MAC in along with the interface it came from. We'll use the timer to eventually forget this mapping. 
+- Check if the source MAC is in the switch table. If not, put the source MAC in along with the interface it came from. If the source MAC belongs to a different interface, update the interface with what the source MAC is using now. We'll use the timer to eventually forget this mapping. 
 - Is the destination MAC in the table? If not, broadcast the frame across all interfaces except the one where it came from. If it is, then forward the frame along that interface. 
 
 # Switches and Routers
