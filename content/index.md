@@ -9,3 +9,4 @@ Things I might publish (you can see them on your left):
 - Leetcode writeups
 - HTB writeups
 - Random things I feel the need to document
+![[cheatsheet_tex-3.pdf]]
